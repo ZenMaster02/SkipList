@@ -2,6 +2,7 @@ package SkipList_Project.SkipList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.SortedSet;
 
 public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
@@ -31,6 +32,48 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
     {
         T payload;
         SkipListSetItem next;
+        int height = 1;
+        int maxHeight = 4;
+        SkipListSetItem()
+        {
+
+        }
+        SkipListSetItem(T input)
+        {
+            payload = input;
+            height = changeHeight();
+        }
+
+        // for debugging purposes, creates an item with specified height
+        SkipListSetItem(T input, int height)
+        {
+            payload = input;
+            this.height = height;
+        }
+        
+        public SkipListSetItem createHead()
+        {
+            return new SkipListSetItem();
+        }
+
+        public int changeHeight()
+        {
+            Random r = new Random(System.currentTimeMillis());
+            int height = 0;
+            while (height < maxHeight)
+            {
+                height++;
+                if (r.nextInt(2) == 0)
+                {
+                    break;
+                }
+            }
+            return height;
+        }
+    }
+
+    public void reBalance()
+    {
 
     }
     // Sorted set functions
