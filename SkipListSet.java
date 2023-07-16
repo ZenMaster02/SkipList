@@ -70,6 +70,11 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
             }
             return height;
         }
+
+        public boolean equals(SkipListSetItem compare)
+        {
+            return (payload.equals(compare.payload));
+        }
     }
 
     public void reBalance()
@@ -147,7 +152,11 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
 
     public boolean equals (Object o)
     {
-        return false;
+        if (!(o instanceof Collection))
+        {
+            System.out.println("error, passing non collection into set equals");
+        }
+        return (hashCode() == o.hashCode());
     }
 
     public int hashCode()
