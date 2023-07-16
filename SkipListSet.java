@@ -7,31 +7,36 @@ import java.util.SortedSet;
 
 public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
     int size = 0;
-    Iterator<T> iterator;
-    private class SkipListSetIterator<T extends Comparable<T>> implements Iterator<T> {
-
+    SkipListSetItem<T> lowestHead = new SkipListSetItem<T>();
+    class SkipListSetIterator<T extends Comparable<T>> implements Iterator<T> {
+        SkipListSetItem<T> current;
+        SkipListSetIterator(SkipListSet<T> set)
+        {
+            current = (SkipListSetItem<T>)set.lowestHead;
+        }
         @Override
         public boolean hasNext() {
     
-            return false;
+            return current != null;
         }
     
         @Override
         public T next() {
-    
-            return null;
+            T data = current.getPayload();
+            current = current.getNext();
+            return data;
         }
+        // implement later
+        // @Override
+        // public void remove() {
 
-        @Override
-        public void remove() {
-
-        }        
+        // }        
     }
     
-    private class SkipListSetItem<T extends Comparable<T>>
+    class SkipListSetItem<T extends Comparable<T>>
     {
-        T payload;
-        SkipListSetItem next;
+        T payload = null;
+        SkipListSetItem<T> next = null;
         int height = 1;
         int maxHeight = 4;
         SkipListSetItem()
@@ -51,9 +56,9 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
             this.height = height;
         }
         
-        public SkipListSetItem createHead()
+        public SkipListSetItem<T> createHead()
         {
-            return new SkipListSetItem();
+            return new SkipListSetItem<T>();
         }
 
         public int changeHeight()
@@ -75,11 +80,26 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
         {
             return (payload.equals(compare.payload));
         }
+
+        public T getPayload()
+        {
+            return payload;
+        }
+
+        public SkipListSetItem<T> getNext()
+        {
+            return next;
+        }
     }
 
     public void reBalance()
     {
 
+    }
+
+    SkipListSetItem<T> getHead()
+    {
+        return lowestHead;
     }
     // Sorted set functions
     @Override
@@ -115,15 +135,29 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
     }
 
     // Set functions
+    // no duplicates 1 level
     @Override
     public boolean add(T e) {
-
-        return false;
+        SkipListSetItem<T> current = lowestHead;
+        while (current.next != null)
+        {
+            current = current.next;
+        }
+        current.next = new SkipListSetItem<T>(e);
+        return true;
     }
     
+    // simplistic
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+        for (T item : c)
+        {
+            if (!add(item))
+            {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override
@@ -171,7 +205,7 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return iterator;
+        return new SkipListSetIterator<T>(this);
     }
     
     @Override
