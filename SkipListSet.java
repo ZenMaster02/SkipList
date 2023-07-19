@@ -1,4 +1,5 @@
 package SkipList_Project.SkipList;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -6,24 +7,41 @@ import java.util.Random;
 import java.util.SortedSet;
 
 public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
-    int size = 0;
-    SkipListSetItem<T> lowestHead = new SkipListSetItem<T>();
-    class SkipListSetIterator<T extends Comparable<T>> implements Iterator<T> {
+    int size;
+    // highest level
+    int level;
+    Random rand = new Random(System.currentTimeMillis());
+    SkipListSetItem<T> head;
+    public SkipListSet()
+    {
+        level = -1;
+        head = new SkipListSetItem<>(null, 0);
+        size = 0;
+    }
+
+    class SkipListSetIterator<E extends Comparable<T>> implements Iterator<T> {
         SkipListSetItem<T> current;
         SkipListSetIterator(SkipListSet<T> set)
         {
-            current = (SkipListSetItem<T>)set.lowestHead;
+            current = head;
         }
         @Override
         public boolean hasNext() {
-    
-            return current != null;
+            return current.forward.get(0) != null;
         }
     
         @Override
         public T next() {
-            T data = current.getPayload();
-            current = current.getNext();
+            if (current == head)
+            {
+                if (current.forward.get(0) != null)
+                {
+                    current = current.forward.get(0);
+                }
+            }
+            T data = current.payload();
+            System.out.print("Height: " + current.forward.size() + " ");
+            current = current.forward.get(0);
             return data;
         }
         // implement later
@@ -36,60 +54,43 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
     class SkipListSetItem<T extends Comparable<T>>
     {
         T payload = null;
-        SkipListSetItem<T> next = null;
-        int height = 1;
-        int maxHeight = 4;
-        SkipListSetItem()
-        {
+        ArrayList<SkipListSetItem<T>> forward = new ArrayList<>();
 
-        }
-        SkipListSetItem(T input)
-        {
-            payload = input;
-            height = changeHeight();
-        }
-
-        // for debugging purposes, creates an item with specified height
         SkipListSetItem(T input, int height)
         {
             payload = input;
-            this.height = height;
+            forward = new ArrayList<SkipListSetItem<T>>(level + 1);
+            // creates null pointers through the list
+            for (int i = 0; i < level; i++)
+            {
+                forward.add(i, null);
+            }
+            
         }
         
-        public SkipListSetItem<T> createHead()
-        {
-            return new SkipListSetItem<T>();
-        }
-
-        public int changeHeight()
-        {
-            Random r = new Random(System.currentTimeMillis());
-            int height = 0;
-            while (height < maxHeight)
-            {
-                height++;
-                if (r.nextInt(2) == 0)
-                {
-                    break;
-                }
-            }
-            return height;
-        }
-
-        public boolean equals(SkipListSetItem compare)
+        public boolean equals(SkipListSetItem<T> compare)
         {
             return (payload.equals(compare.payload));
         }
 
-        public T getPayload()
+        public T payload()
         {
             return payload;
         }
-
-        public SkipListSetItem<T> getNext()
+        
+        public void printForward()
         {
-            return next;
+            System.out.print("[");
+            for (SkipListSetItem<T> item : forward)
+            {
+                if (item != null)
+                {
+                    System.out.print(item.payload().toString() + ", ");
+                }
+            }
+            System.out.print("]\n");
         }
+
     }
 
     public void reBalance()
@@ -97,9 +98,69 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
 
     }
 
+    int randomLevel()
+    {
+        int level = 0;
+        int temp = rand.nextInt() % 2;
+        while (true)
+        {
+            temp = Math.abs(rand.nextInt()) % 2;
+            level++;
+            if (temp == 1)
+            {
+                break;
+            }
+            
+        }
+        return level;
+    }
+
+    boolean find(T item)
+    {
+        SkipListSetItem<T> current = head;
+        // goes from the highest level down
+        if (head.forward.isEmpty() || head.forward.get(0) == null)
+        {
+            return false;
+        }
+        for (int i = level; i >= 0; i--)
+        {
+            // continues the search until it is greater than searched for element
+            while ((current.forward.get(i) != null) 
+                    && (current.forward.get(i).payload().compareTo(item) < 0))
+            {
+                current = current.forward.get(i);
+            }
+        }
+        // get the lowest version of the node
+        current = current.forward.get(0);
+        // if the payload is the same as the searched item, it is in the list
+        if ((current != null) && (current.payload().compareTo(item) == 0))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     SkipListSetItem<T> getHead()
     {
-        return lowestHead;
+        return head;
+    }
+
+    private void adjustHead(int newLevel)
+    {
+        SkipListSetItem<T> temp = head;
+        SkipListSetItem<T> newHead = new SkipListSetItem<T>(null, newLevel);
+        // copying the pointers from the old head to the new head
+        for (int i = 0; i <= level; i++)
+        {
+            newHead.forward.set(i,temp.forward.get(i));
+        }
+        level = newLevel;
+        head = newHead;
     }
     // Sorted set functions
     @Override
@@ -135,15 +196,53 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
     }
 
     // Set functions
-    // no duplicates 1 level
     @Override
     public boolean add(T e) {
-        SkipListSetItem<T> current = lowestHead;
-        while (current.next != null)
+        // if element is in the set, return false and dont do anything
+        if (find(e))
         {
-            current = current.next;
+            return false;
         }
-        current.next = new SkipListSetItem<T>(e);
+        int newLevel = randomLevel();
+        // if level is the heighest level
+        if (newLevel > level)
+        {   
+            adjustHead(newLevel);
+        }
+        if (head.forward.isEmpty())
+        {
+            for (int i = 0 ; i <= level; i++)
+            {
+                head.forward.add(new SkipListSetItem<T>(e, i));
+            }
+  
+            size++;
+            return true;
+        }
+        // temporary array list that holds the pointers to the next lowest node
+        ArrayList<SkipListSetItem<T>> updateArrayList = new ArrayList<>();
+        SkipListSetItem<T> current = head;
+        // goes from the highest level down and copies 
+        for (int i = level; i >= 0; i--)
+        {   
+            // continues the search until it is greater than searched for element
+            while ((current.forward.get(i) != null) && (current.forward.get(i).payload().compareTo(e) < 0))
+            {
+                current = current.forward.get(i);   
+                System.out.println(current.payload());
+            } 
+            updateArrayList.add(current);
+        }
+        SkipListSetItem<T> newItem = new SkipListSetItem<T>(e, newLevel);
+        // puts the new item into 
+        for (int i = 0; i <= newLevel; i++)
+        {
+            newItem.forward.set(i,updateArrayList.get(i).forward.get(i));
+            updateArrayList.get(i).forward.set(i, newItem);
+        }
+        size++;
+
+
         return true;
     }
     
@@ -152,17 +251,16 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
     public boolean addAll(Collection<? extends T> c) {
         for (T item : c)
         {
-            if (!add(item))
-            {
-                return false;
-            }
+            add(item);
         }
         return true;
     }
     
     @Override
     public void clear() {
-
+        head = new SkipListSetItem<>(null, 0);
+        level = -1;
+        size = 0;
     }
     
     @Override

@@ -5,7 +5,10 @@ public class Test {
     {
         SkipListSet<Integer> set = new SkipListSet<>();
         set.add(1);
+        set.getHead().printForward();
         set.add(2);
+        set.getHead().forward.get(0).printForward();
+
         Iterator<Integer> iterator = set.iterator();
         while (iterator.hasNext())
         {
