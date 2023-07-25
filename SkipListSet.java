@@ -107,10 +107,20 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
 
     }
 
+    // basically just makes a whole new skiplist with the previous values
     public void reBalance()
     {
-        // ArrayList<T> a = List.asList.toArray(new T[0]); 
-        System.out.println();
+        ArrayList<T> list = new ArrayList<>();
+        for(Object o : this)
+        {
+            list.add((T) o);
+        }
+        level = -1;
+        maxLevel = 4;
+        head = new SkipListSetItem<>(null, 0);
+        size = 0;
+
+        addAll(list);
     }
 
     private int randomLevel()
