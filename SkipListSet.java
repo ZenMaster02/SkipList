@@ -27,7 +27,7 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
         }
         @Override
         public boolean hasNext() {
-            return current.forward.get(0) != null;
+            return current != null;
         }
     
         @Override
@@ -40,7 +40,7 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
                 }
             }
             T data = current.payload();
-            System.out.print("Height: " + current.forward.size() + " ");
+            System.out.print("Height: " + (current.forward.size()-1) + " Payload:");
             current = current.forward.get(0);
             return data;
         }
@@ -59,9 +59,9 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
         SkipListSetItem(T input, int height)
         {
             payload = input;
-            forward = new ArrayList<SkipListSetItem<T>>(level + 1);
+            forward = new ArrayList<SkipListSetItem<T>>(height + 1);
             // creates null pointers through the list
-            for (int i = 0; i < level; i++)
+            for (int i = 0; i <= height; i++)
             {
                 forward.add(i, null);
             }
@@ -86,6 +86,10 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
                 if (item != null)
                 {
                     System.out.print(item.payload().toString() + ", ");
+                }
+                else
+                {
+                    System.out.print("null ");
                 }
             }
             System.out.print("]\n");
@@ -123,7 +127,7 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
         {
             return false;
         }
-        for (int i = level; i >= 0; i--)
+        for (int i = level-1; i >= 0; i--)
         {
             // continues the search until it is greater than searched for element
             while ((current.forward.get(i) != null) 
@@ -209,18 +213,13 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
         {   
             adjustHead(newLevel);
         }
-        if (head.forward.isEmpty())
-        {
-            for (int i = 0 ; i <= level; i++)
-            {
-                head.forward.add(new SkipListSetItem<T>(e, i));
-            }
-  
-            size++;
-            return true;
-        }
+        
         // temporary array list that holds the pointers to the next lowest node
-        ArrayList<SkipListSetItem<T>> updateArrayList = new ArrayList<>();
+        ArrayList<SkipListSetItem<T>> updateArrayList = new ArrayList<>(level+1);
+        for (int i = 0; i <= level; i++)
+        {
+            updateArrayList.add(i, null);
+        }
         SkipListSetItem<T> current = head;
         // goes from the highest level down and copies 
         for (int i = level; i >= 0; i--)
@@ -229,15 +228,14 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
             while ((current.forward.get(i) != null) && (current.forward.get(i).payload().compareTo(e) < 0))
             {
                 current = current.forward.get(i);   
-                System.out.println(current.payload());
             } 
-            updateArrayList.add(current);
+            updateArrayList.set(i,current);
         }
         SkipListSetItem<T> newItem = new SkipListSetItem<T>(e, newLevel);
         // puts the new item into 
         for (int i = 0; i <= newLevel; i++)
         {
-            newItem.forward.set(i,updateArrayList.get(i).forward.get(i));
+            newItem.forward.set(i, updateArrayList.get(i).forward.get(i));
             updateArrayList.get(i).forward.set(i, newItem);
         }
         size++;
