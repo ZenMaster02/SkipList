@@ -25,7 +25,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         size = 0;
     }
 
-    private class SkipListSetIterator<T extends Comparable<T>> implements Iterator<T> {
+    private class SkipListSetIterator<E extends Comparable<T>> implements Iterator<T> {
         private SkipListSetItem<T> current;
         SkipListSetIterator(SkipListSet<T> set)
         {
