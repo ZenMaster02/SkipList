@@ -15,11 +15,12 @@ public class Test {
         set.addAll(entries);
         set.getHead().printForward();
         System.out.println(set.size());
-        Integer [] a = set.toArray(new Integer[0]);
+        Object [] a = set.toArray();
         for (int i = 0; i < a.length; i++)
         {
             System.out.print(a[i] + " ");
         }
+        System.out.println();
         Iterator<Integer> iterator = set.iterator();
         while (iterator.hasNext())
         {
