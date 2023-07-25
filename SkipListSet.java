@@ -107,6 +107,31 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
 
     }
 
+    public void printSkipList()
+    {
+        for (int i = level; i >= 0; i--)
+        {
+            System.out.print("Level: " + i + " ");
+            SkipListSetItem<T> current = head;
+            for (int j = 0; j <= size(); j++)
+            {
+                if (current.payload() == null)
+                {
+                    System.out.print("head\t");
+                }
+                else if (current.height() < i)
+                {
+                    System.out.print("\t");
+                }
+                else
+                {
+                    System.out.print(current.payload() + "\t");
+                }
+                current = current.forward.get(0);
+            }
+            System.out.println();
+        }
+    }
     // basically just makes a whole new skiplist with the previous values
     public void reBalance()
     {

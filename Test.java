@@ -14,33 +14,25 @@ public class Test {
         List<Integer> entries = Arrays.asList(8,6,7,5,3,0,9);
         set.addAll(entries);
         // set.getHead().printForward();
-        System.out.println(set.size());
+        System.out.println("Size: " + set.size());
         // Object [] a = set.toArray();
         // for (int i = 0; i < a.length; i++)
         // {
         //     System.out.print(a[i] + " ");
         // }
         // System.out.println();
-        for (Integer i : set)
-        {
-            System.out.println(i);
-        }
+        // SkipListSet<String> set = new SkipListSet<>();
+        // List<String> entries = Arrays.asList("Roses", "are", "red", "violets", "are", "blue", "covfefe");
+        // set.addAll(entries);
+        // // String [] a = set.toArray(new String[0]);
+        // // for (int i = 0; i < a.length; i++)
+        // // {
+        // //     System.out.print(a[i] + " ");
+        // // }
+        set.printSkipList();
         set.reBalance();
         System.out.println();
-        for (Integer i : set)
-        {
-            System.out.println(i);
-        }
-
-        // SkipListSet<String> set = new SkipListSet<>();
-        // List<String> entries = Arrays.asList("a", "z", "q", "r", "F");
-        // set.addAll(entries);
-        // String [] a = set.toArray(new String[0]);
-        // for (int i = 0; i < a.length; i++)
-        // {
-        //     System.out.print(a[i] + " ");
-        // }
-
+        set.printSkipList();
     }
 
 }
