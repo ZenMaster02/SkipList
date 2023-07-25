@@ -5,16 +5,17 @@ public class Test {
     {
         SkipListSet<Integer> set = new SkipListSet<>();
         set.add(1);
-        set.getHead().printForward();
+        // set.getHead().printForward();
         set.add(3);
-        set.getHead().printForward();
-        set.getHead().forward.get(0).printForward();
+        // set.getHead().printForward();
+        // set.getHead().forward.get(0).printForward();
         set.add(2);
-        set.getHead().printForward();
+        // set.getHead().printForward();
         List<Integer> entries = Arrays.asList(8,6,7,5,3,0,9);
         set.addAll(entries);
-        set.getHead().printForward();
-        System.out.println(set.size());
+        // set.getHead().printForward();
+        // System.out.println(set.size());
+        // Integer [] a = set.toArray(new Integer[0]);
         Iterator<Integer> iterator = set.iterator();
         while (iterator.hasNext())
         {

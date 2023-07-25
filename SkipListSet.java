@@ -1,12 +1,15 @@
 package SkipList_Project.SkipList;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
+import java.util.Arrays;
 
-public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
+public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     int size;
     // highest level
     int level;
@@ -22,11 +25,11 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
         size = 0;
     }
 
-    class SkipListSetIterator<E extends Comparable<T>> implements Iterator<T> {
-        SkipListSetItem<T> current;
+    private class SkipListSetIterator<T extends Comparable<T>> implements Iterator<T> {
+        private SkipListSetItem<T> current;
         SkipListSetIterator(SkipListSet<T> set)
         {
-            current = head;
+            current = set.getHead();
         }
         @Override
         public boolean hasNext() {
@@ -43,7 +46,7 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
                 }
             }
             T data = current.payload();
-            System.out.print("Height: " + (current.height()) + " Payload:");
+            // System.out.print("Height: " + (current.height()) + " Payload:");
             current = current.forward.get(0);
             return data;
         }
@@ -106,22 +109,8 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
 
     public void reBalance()
     {
-        // int newLevel = randomLevel();
-        // // if level is the heighest level
-        // if (newLevel > level)
-        // {   
-        //     adjustHead(newLevel);
-        // }        
-        // for (int i = 1; i <= size; i++)
-        // {
-
-        // }
-        // SkipListSetItem<> nowEditing = head;
-        
-        // for (int i = 1; i <= level; i++)
-        // {
-            
-        // }
+        // ArrayList<T> a = List.asList.toArray(new T[0]); 
+        System.out.println();
     }
 
     private int randomLevel()
@@ -354,14 +343,20 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
 
     @Override
     public Object[] toArray() {
-
+        
         return null;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a) {
-
+        // ArrayList<T> list = new ArrayList<>();
+        // Iterator iter = iterator();
+        // for(Object o : this)
+        // {
+        //     list.add((T) o);
+        // }
+        // return list.toArray(a);  
         return null;
     }   
 }
