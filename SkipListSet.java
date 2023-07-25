@@ -10,11 +10,14 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
     int size;
     // highest level
     int level;
+    int maxLevel;
     Random rand = new Random(System.currentTimeMillis());
     SkipListSetItem<T> head;
+
     public SkipListSet()
     {
         level = -1;
+        maxLevel = 4;
         head = new SkipListSetItem<>(null, 0);
         size = 0;
     }
@@ -40,7 +43,7 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
                 }
             }
             T data = current.payload();
-            System.out.print("Height: " + (current.forward.size()-1) + " Payload:");
+            System.out.print("Height: " + (current.height()) + " Payload:");
             current = current.forward.get(0);
             return data;
         }
@@ -55,9 +58,10 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
     {
         T payload = null;
         ArrayList<SkipListSetItem<T>> forward = new ArrayList<>();
-
+        private int height;
         SkipListSetItem(T input, int height)
         {
+            this.height = height;
             payload = input;
             forward = new ArrayList<SkipListSetItem<T>>(height + 1);
             // creates null pointers through the list
@@ -65,7 +69,6 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
             {
                 forward.add(i, null);
             }
-            
         }
         
         public boolean equals(SkipListSetItem<T> compare)
@@ -78,6 +81,10 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
             return payload;
         }
         
+        public int height()
+        {
+            return height;
+        }
         public void printForward()
         {
             System.out.print("[");
@@ -99,18 +106,38 @@ public class SkipListSet<T extends Comparable<T>> implements SortedSet<T> {
 
     public void reBalance()
     {
+        // int newLevel = randomLevel();
+        // // if level is the heighest level
+        // if (newLevel > level)
+        // {   
+        //     adjustHead(newLevel);
+        // }        
+        // for (int i = 1; i <= size; i++)
+        // {
 
+        // }
+        // SkipListSetItem<> nowEditing = head;
+        
+        // for (int i = 1; i <= level; i++)
+        // {
+            
+        // }
     }
 
-    int randomLevel()
+    private int randomLevel()
     {
         int level = 0;
+        // max level is chosen based on binary log of the amount of nodes
+        double log2size = Math.log(size)/Math.log(2);
+        if (log2size > maxLevel)
+            maxLevel = (int) Math.floor(log2size);
+
         int temp = rand.nextInt() % 2;
         while (true)
         {
             temp = Math.abs(rand.nextInt()) % 2;
             level++;
-            if (temp == 1)
+            if (temp == 1 || level == maxLevel)
             {
                 break;
             }
