@@ -350,13 +350,12 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a) {
-        // ArrayList<T> list = new ArrayList<>();
-        // Iterator iter = iterator();
-        // for(Object o : this)
-        // {
-        //     list.add((T) o);
-        // }
-        // return list.toArray(a);  
-        return null;
+        ArrayList<T> list = new ArrayList<>();
+        Iterator iter = iterator();
+        for(Object o : this)
+        {
+            list.add((T) o);
+        }
+        return list.toArray(a);  
     }   
 }
