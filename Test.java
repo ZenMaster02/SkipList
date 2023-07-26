@@ -11,7 +11,7 @@ public class Test {
         // set.getHead().forward.get(0).printForward();
         set.add(2);
         // set.getHead().printForward();
-        List<Integer> entries = Arrays.asList(5,3,0,9);
+        List<Integer> entries = Arrays.asList(5,3,0,9, 4, 6, 8);
         set.addAll(entries);
         // set.getHead().printForward();
         System.out.println("Size: " + set.size());
@@ -29,20 +29,8 @@ public class Test {
         // // {
         // //     System.out.print(a[i] + " ");
         // // }
-        set.printSkipList();
-        // set.remove(3);
         System.out.println();
-        set.printSkipList();
-        Iterator<> iter = set.iterator(); 
-        while (iter.hasNext())
-        {
-            Integer i = iter.next();
-
-            if (i % 2 == 0)
-            {
-                iter.remove();
-            }
-        }
+        set.printSkipList();        
         // Set<Integer> set2 = new HashSet<>();
         // set2.addAll(Arrays.asList(1,2,3,8,6,7,5,9));
         // System.out.println((set2.equals(set)));
