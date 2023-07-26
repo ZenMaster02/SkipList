@@ -11,12 +11,12 @@ import java.util.SortedSet;
 import java.util.Arrays;
 
 public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
-    int size;
+    private int size;
     // highest level
-    int level;
-    int maxLevel;
-    Random rand = new Random(System.currentTimeMillis());
-    SkipListSetItem<T> head;
+    private int level;
+    private int maxLevel;
+    private Random rand = new Random(System.currentTimeMillis());
+    private SkipListSetItem<T> head;
 
     public SkipListSet()
     {
@@ -31,8 +31,8 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     }
     private class SkipListSetIterator<E extends Comparable<T>> implements Iterator<T> {
         private SkipListSetItem<T> current;
-        T lastReturn = null;
-        SkipListSet set;
+        private T lastReturn = null;
+        private SkipListSet set;
         SkipListSetIterator(SkipListSet<T> set)
         {
             this.set = set;
@@ -67,8 +67,8 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     
     class SkipListSetItem<T extends Comparable<T>>
     {
-        T payload = null;
-        ArrayList<SkipListSetItem<T>> forward = new ArrayList<>();
+        private T payload = null;
+        private ArrayList<SkipListSetItem<T>> forward = new ArrayList<>();
         private int height;
         SkipListSetItem(T input, int height)
         {
@@ -81,11 +81,6 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
                 forward.add(i, null);
             }
         }
-        
-        public boolean equals(SkipListSetItem<T> compare)
-        {
-            return (payload.equals(compare.payload));
-        }
 
         public T payload()
         {
@@ -96,25 +91,27 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         {
             return height;
         }
-        public void printForward()
-        {
-            System.out.print("[");
-            for (SkipListSetItem<T> item : forward)
-            {
-                if (item != null)
-                {
-                    System.out.print(item.payload().toString() + ", ");
-                }
-                else
-                {
-                    System.out.print("null ");
-                }
-            }
-            System.out.print("]\n");
-        }
+    
+        // public void printForward()
+        // {
+        //     System.out.print("[");
+        //     for (SkipListSetItem<T> item : forward)
+        //     {
+        //         if (item != null)
+        //         {
+        //             System.out.print(item.payload().toString() + ", ");
+        //         }
+        //         else
+        //         {
+        //             System.out.print("null ");
+        //         }
+        //     }
+        //     System.out.print("]\n");
+        // }
 
     }
 
+    // debugging printing code delete later
     public void printSkipList()
     {
         for (int i = level; i >= 0; i--)
@@ -140,6 +137,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             System.out.println();
         }
     }
+    
     // basically just makes a whole new skiplist with the previous values
     public void reBalance()
     {
@@ -149,9 +147,6 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             list.add((T) o);
         }
         resetList();
-        double log2size = Math.log(size)/Math.log(2);
-        if (log2size > maxLevel)
-            maxLevel = (int) Math.floor(log2size);
 
         addAll(list);
     }
@@ -178,7 +173,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         return level;
     }
 
-    boolean find(T item)
+    private boolean find(T item)
     {
         SkipListSetItem<T> current = head;
         // goes from the highest level down
@@ -208,7 +203,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         }
     }
 
-    SkipListSetItem<T> getHead()
+    private SkipListSetItem<T> getHead()
     {
         return head;
     }
@@ -261,8 +256,8 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public Comparator<? super T> comparator() {
+        
         return null;
     }
 
@@ -311,7 +306,6 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         return true;
     }
     
-    // simplistic
     @Override
     public boolean addAll(Collection<? extends T> c) {
         boolean fin = false;
@@ -329,9 +323,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     
     @Override
     public void clear() {
-        head = new SkipListSetItem<>(null, 0);
-        level = -1;
-        size = 0;
+        resetList();
     }
     
     @Override
@@ -441,17 +433,33 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         boolean fin = false;
         for (Object o : c)
         {
-            boolean res = add(o);
+            boolean res = remove(o);
             if (res == true)
             {
                 fin = true;
             }
         }
+        return fin;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        boolean fin = false;
+        for (Object o : this)
+        {
+            boolean res = false;
+            if (c.contains(o))
+            {
+                continue;
+            }
+            res = remove(o);
+            if (res == true)
+            {
+                fin = true;
+            }
+        }
+        return fin;
+
     }
 
     @Override
