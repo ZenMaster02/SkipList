@@ -9,8 +9,8 @@ public class Test {
         set.addAll(entries);
         System.out.println("Size: " + set.size());
         set.printSkipList();
+        set.reBalance();
         System.out.println();
-        set.retainAll(Arrays.asList(1,1,2,3,5,8,13));
         set.printSkipList();        
 
         // Set<Integer> set2 = new HashSet<>();

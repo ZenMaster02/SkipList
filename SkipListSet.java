@@ -91,6 +91,19 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         {
             return height;
         }
+
+        public void changeHeight(int height)
+        {
+            this.height = height;
+            SkipListSetItem<T> next = forward.get(0);
+            forward = new ArrayList<SkipListSetItem<T>>(height + 1);
+            // creates null pointers through the list
+            forward.add(0, next);
+            for (int i = 1; i <= height; i++)
+            {
+                forward.add(i, null);
+            }
+        }
     
         // public void printForward()
         // {
@@ -141,14 +154,29 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     // basically just makes a whole new skiplist with the previous values
     public void reBalance()
     {
-        ArrayList<T> list = new ArrayList<>();
-        for(Object o : this)
+        double log2size = Math.log(size)/Math.log(2);
+        maxLevel = 4;
+        if (log2size > maxLevel)
+            maxLevel = (int) Math.floor(log2size);
+        SkipListSetItem<T> current = head.forward.get(0);
+        SkipListSetItem<T> [] lastItem = new SkipListSetItem[maxLevel+1];
+        SkipListSetItem<T> newHead =  new SkipListSetItem<>(null, maxLevel);
+        newHead.forward.set(0, current);
+        for (int i = 0; i < lastItem.length; i++)
         {
-            list.add((T) o);
+            lastItem[i] = newHead;
         }
-        resetList();
-
-        addAll(list);
+        for (int i = 0; i < size; i++)
+        {
+            current.changeHeight(randomLevel());
+            for (int j = 1; j <= current.height(); j++)
+            {
+                lastItem[j].forward.set(j, current);
+                lastItem[j] = current;
+            }
+            current = current.forward.get(0);
+        }
+        head = newHead;
     }
 
     private int randomLevel()
