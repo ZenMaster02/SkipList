@@ -31,8 +31,11 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     }
     private class SkipListSetIterator<E extends Comparable<T>> implements Iterator<T> {
         private SkipListSetItem<T> current;
+        T lastReturn = null;
+        SkipListSet set;
         SkipListSetIterator(SkipListSet<T> set)
         {
+            this.set = set;
             current = set.getHead();
         }
         @Override
@@ -50,17 +53,21 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
                 }
             }
             T data = current.payload();
+            lastReturn = data;
             // System.out.print("Height: " + (current.height()) + " Payload:");
             current = current.forward.get(0);
             return data;
         }
-        // removes current node and moves to next one
-        // @Override
-        // public void remove() {
-        //     SkipListSetItem<T> temp = current;
-        //     current = current.forward.get(0);
-        //     remove(temp.payload());
-        // }        
+        // removes the last return value
+        @Override
+        public void remove() {
+            set.remove(lastReturn);
+            if (lastReturn == null)
+            {
+                return;
+            }
+            
+        }        
     }
     
     class SkipListSetItem<T extends Comparable<T>>
