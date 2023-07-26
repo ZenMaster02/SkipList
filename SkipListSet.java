@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.Arrays;
 
@@ -19,12 +20,15 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
 
     public SkipListSet()
     {
+        resetList();
+    }
+    private void resetList()
+    {
         level = -1;
         maxLevel = 4;
         head = new SkipListSetItem<>(null, 0);
         size = 0;
     }
-
     private class SkipListSetIterator<E extends Comparable<T>> implements Iterator<T> {
         private SkipListSetItem<T> current;
         SkipListSetIterator(SkipListSet<T> set)
@@ -50,10 +54,12 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             current = current.forward.get(0);
             return data;
         }
-        // implement later
+        // removes current node and moves to next one
         // @Override
         // public void remove() {
-
+        //     SkipListSetItem<T> temp = current;
+        //     current = current.forward.get(0);
+        //     remove(temp.payload());
         // }        
     }
     
@@ -140,10 +146,10 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         {
             list.add((T) o);
         }
-        level = -1;
-        maxLevel = 4;
-        head = new SkipListSetItem<>(null, 0);
-        size = 0;
+        resetList();
+        double log2size = Math.log(size)/Math.log(2);
+        if (log2size > maxLevel)
+            maxLevel = (int) Math.floor(log2size);
 
         addAll(list);
     }
@@ -152,10 +158,10 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     {
         int level = 0;
         // max level is chosen based on binary log of the amount of nodes
+        // amount needed till next rebalance is doubled
         double log2size = Math.log(size)/Math.log(2);
         if (log2size > maxLevel)
             maxLevel = (int) Math.floor(log2size);
-
         int temp = rand.nextInt() % 2;
         while (true)
         {
@@ -306,11 +312,17 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     // simplistic
     @Override
     public boolean addAll(Collection<? extends T> c) {
+        boolean fin = false;
         for (T item : c)
         {
-            add(item);
+            boolean res = true;
+            res = add(item);
+            if (res == true)
+            {
+                fin = true;
+            }
         }
-        return true;
+        return fin;
     }
     
     @Override
@@ -323,7 +335,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean contains(Object o) {
-        return false;
+        return find((T)o);
     }
 
     @Override
@@ -341,16 +353,26 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
 
     public boolean equals (Object o)
     {
-        if (!(o instanceof Collection))
+        if (!(o instanceof Set))
         {
-            System.out.println("error, passing non collection into set equals");
+            System.out.println("error, passing non set into set equals");
         }
         return (hashCode() == o.hashCode());
     }
 
     public int hashCode()
     {
-        return 1;
+        int h = 0;
+        Iterator iter = iterator();
+        while (iter.hasNext())
+        {
+            T item = iter.next();
+            if (item != null)
+            {
+                h += item.hashCode();
+            }
+        }
+        return h;
     }
 
     @Override
@@ -366,12 +388,63 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean remove(Object o) {
-        return false;
+        
+        if (o == null)
+        {
+            return false;
+        }
+        if (!contains(o))
+            return false;
+        if (size() == 1)
+        {
+            resetList();
+            return true;
+        }
+
+        // temporary array list that holds the pointers to the node before the target for removal node
+        ArrayList<SkipListSetItem<T>> updateArrayList = new ArrayList<>(level+1);
+        for (int i = 0; i <= level; i++)
+        {
+            updateArrayList.add(i, null);
+        }
+        SkipListSetItem<T> current = head;
+        // goes from the highest level down and copies 
+        for (int i = level; i >= 0; i--)
+        {   
+            // continues the search until it is greater than searched for element
+            while ((current.forward.get(i) != null) && (current.forward.get(i).payload().compareTo((T)o) < 0))
+            {
+                current = current.forward.get(i);   
+            } 
+            updateArrayList.set(i,current);
+        }
+        SkipListSetItem<T> delNode = current.forward.get(0);
+        int delHeight = delNode.height();
+        for (int i = 0; i <= level; i++)
+        {
+            if (i <= delHeight)
+            {
+                updateArrayList.get(i).forward.set(i, delNode.forward.get(i));
+            }
+        }
+        size--;
+        
+        return true;
     }
 
+    // removes all objects in a passed in collection
+    // returns false if every single remove attempt failed, otherwise true
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        boolean fin = false;
+        for (Object o : c)
+        {
+            boolean res = add(o);
+            if (res == true)
+            {
+                fin = true;
+            }
+        }
     }
 
     @Override
