@@ -155,7 +155,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     public void reBalance()
     {
         double log2size = Math.log(size)/Math.log(2);
-        maxLevel = 4;
+        maxLevel = 8;
         if (log2size > maxLevel)
             maxLevel = (int) Math.floor(log2size);
         SkipListSetItem<T> current = head.forward.get(0);
@@ -216,6 +216,10 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
 
     private boolean find(T item)
     {
+        if (isEmpty())
+        {
+            return false;
+        }
         SkipListSetItem<T> current = head;
         // goes from the highest level down
         if (head.forward.isEmpty() || head.forward.get(0) == null)
@@ -362,23 +366,13 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     public boolean contains(Object o) {
         try
         {
-            if (!(o instanceof T))
-            {
-                throw new Exception("Must pass in object of set type");
-            }
-            return find(T(o));
+            return find((T)o);
         }
         catch (Exception e)
         {
             System.out.println(e);
             return false;
         }
-        catch (Error err)
-        {
-            System.out.println(err);
-            return false;
-        }
-        
     }
 
     @Override
@@ -444,46 +438,55 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         T e = null;
         try
         {
-            if (!(o instanceof T))
-                throw new Exception("Must pass in object of set type");
             e = (T)o;
+            if (e == null)
+            {
+                return false;
+            }
+            if (!contains(e))
+                return false;
+            if (size() == 1)
+            {
+                resetList();
+                return true;
+            }
+
+            // temporary array list that holds the pointers to the node before the target for removal node
+            ArrayList<SkipListSetItem<T>> updateArrayList = new ArrayList<>(level+1);
+            for (int i = 0; i <= level; i++)
+            {
+                updateArrayList.add(i, null);
+            }
+            traverseSkipList(e, updateArrayList);
+            SkipListSetItem<T> delNode = updateArrayList.get(0).forward.get(0);
+            int delHeight = delNode.height();
+            SkipListSetItem<T> delHead = head;
+            for (int i = 0; i <= level; i++)
+            {
+                if (i < delHeight)
+                {
+                    // sets latest node on each levels next node to be the next nodes of the deleted node
+                    SkipListSetItem<T> delNodeNext = delNode.forward.get(i);
+                    SkipListSetItem<T> prev = updateArrayList.get(i);
+                    if (prev == null)
+                    {
+                        System.out.println("Prev is null at " + i);
+                    }
+                    else
+                        updateArrayList.get(i).forward.set(i, delNodeNext);
+                }
+            }
+            size--;
+            
+            return true;
         }
         catch (Exception exception)
         {
             System.out.println(exception);
-        }
-        
-        if (e == null)
-        {
             return false;
         }
-        if (!contains(e))
-            return false;
-        if (size() == 1)
-        {
-            resetList();
-            return true;
-        }
-
-        // temporary array list that holds the pointers to the node before the target for removal node
-        ArrayList<SkipListSetItem<T>> updateArrayList = new ArrayList<>(level+1);
-        for (int i = 0; i <= level; i++)
-        {
-            updateArrayList.add(i, null);
-        }
-        traverseSkipList(e, updateArrayList);
-        SkipListSetItem<T> delNode = updateArrayList.get(0).forward.get(0);
-        int delHeight = delNode.height();
-        for (int i = 0; i <= level; i++)
-        {
-            if (i <= delHeight)
-            {
-                updateArrayList.get(i).forward.set(i, delNode.forward.get(i));
-            }
-        }
-        size--;
         
-        return true;
+        
     }
 
     // removes all objects in a passed in collection
@@ -540,23 +543,19 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a) {
+        ArrayList<T> list = new ArrayList<>();
         try
         {
-            if (!(a instanceof T[]))
+            for(Object o : this)
             {
-                throw new Exception("Must pass in array of type in the set");
+                list.add((T) o);
             }
+            return list.toArray(a);  
         }
         catch (Exception e)
         {
             System.out.println(e);
+            return list.toArray(a);  
         }
-        
-        ArrayList<T> list = new ArrayList<>();
-        for(Object o : this)
-        {
-            list.add((T) o);
-        }
-        return list.toArray(a);  
     }   
 }
