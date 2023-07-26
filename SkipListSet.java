@@ -25,7 +25,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     private void resetList()
     {
         level = -1;
-        maxLevel = 4;
+        maxLevel = 8;
         head = new SkipListSetItem<>(null, 0);
         size = 0;
     }
@@ -155,7 +155,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     public void reBalance()
     {
         double log2size = Math.log(size)/Math.log(2);
-        maxLevel = 4;
+        maxLevel = 8;
         if (log2size > maxLevel)
             maxLevel = (int) Math.floor(log2size);
         SkipListSetItem<T> current = head.forward.get(0);
@@ -175,6 +175,14 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
                 lastItem[j] = current;
             }
             current = current.forward.get(0);
+        }
+        for (int i = level; i > 0; i--)
+        {
+            if (newHead.forward.get(i) == null)
+            {
+                // shrinks head if there is a null row
+                adjustHead(i-1, newHead);   
+            }
         }
         head = newHead;
     }
@@ -236,17 +244,19 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         return head;
     }
 
-    private void adjustHead(int newLevel)
+    private SkipListSetItem<T> adjustHead(int newLevel, SkipListSetItem<T> head)
     {
         SkipListSetItem<T> temp = head;
         SkipListSetItem<T> newHead = new SkipListSetItem<T>(null, newLevel);
         // copying the pointers from the old head to the new head
         for (int i = 0; i <= level; i++)
         {
+            if (i > newLevel)
+                break;
             newHead.forward.set(i,temp.forward.get(i));
         }
         level = newLevel;
-        head = newHead;
+        return newHead;
     }
     // Sorted set functions
     @Override
@@ -301,7 +311,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         // if level is the heighest level
         if (newLevel > level)
         {   
-            adjustHead(newLevel);
+            head = adjustHead(newLevel, head);
         }
         
         // temporary array list that holds the pointers to the next lowest node
