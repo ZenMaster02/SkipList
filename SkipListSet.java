@@ -58,7 +58,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             current = current.forward.get(0);
             return data;
         }
-        // removes current node and moves to next one
+        // removes the last return value
         @Override
         public void remove() {
             set.remove(lastReturn);
