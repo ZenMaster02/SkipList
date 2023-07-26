@@ -220,14 +220,22 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     // Sorted set functions
     @Override
     public T first() {
+        if (head == null ||head.forward.get(0) == null)
+        {
+            return null;
+        }
+        return head.forward.get(0).payload();
 
-        return null;
     }
 
     @Override
     public T last() {
-
-        return null;
+        T current = null;
+        for(Object o : this)
+        {
+            current = (T)o;
+        }
+        return current;
     }
 
     @Override
