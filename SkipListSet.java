@@ -62,11 +62,6 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         @Override
         public void remove() {
             set.remove(lastReturn);
-            if (lastReturn == null)
-            {
-                return;
-            }
-            
         }        
     }
     

@@ -1,5 +1,6 @@
 package SkipList_Project.SkipList;
 import java.util.*;
+
 public class Test {
     public static void main(String [] args)
     {
@@ -31,6 +32,18 @@ public class Test {
         // // }
         System.out.println();
         set.printSkipList();        
+        Iterator<Integer> iter = set.iterator();
+        while (iter.hasNext())
+        {
+            Integer i = iter.next();
+
+            if (i % 2 == 1)
+            {
+                iter.remove();
+            }
+        }
+        set.printSkipList();        
+
         // Set<Integer> set2 = new HashSet<>();
         // set2.addAll(Arrays.asList(1,2,3,8,6,7,5,9));
         // System.out.println((set2.equals(set)));
