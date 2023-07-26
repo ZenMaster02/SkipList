@@ -327,9 +327,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     
     @Override
     public void clear() {
-        head = new SkipListSetItem<>(null, 0);
-        level = -1;
-        size = 0;
+        resetList();
     }
     
     @Override
