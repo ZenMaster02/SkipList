@@ -13,9 +13,11 @@ public class Test {
         System.out.println();
         set.printSkipList();        
 
-        // Set<Integer> set2 = new HashSet<>();
-        // set2.addAll(Arrays.asList(1,2,3,8,6,7,5,9));
-        // System.out.println((set2.equals(set)));
+        Set<Integer> set2 = new HashSet<>();
+        set2.addAll(Arrays.asList(1,2,3,8,6,7,5,9));
+        System.out.println((set2.equals(set)));
+        set.retainAll(set2);
+        set.printSkipList();
     }
 
 }
