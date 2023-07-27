@@ -103,6 +103,11 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             {
                 forward.add(i, null);
             }
+            // if height is bigger than current level, increases the level
+            if (height > level)
+            {
+                level = height;
+            }
         }
     
         // public void printForward()
@@ -168,13 +173,27 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         }
         for (int i = 0; i < size; i++)
         {
-            current.changeHeight(randomLevel());
+            current.changeHeight(randomLevel());           
+        
             for (int j = 1; j <= current.height(); j++)
             {
                 lastItem[j].forward.set(j, current);
                 lastItem[j] = current;
             }
             current = current.forward.get(0);
+        }
+        int curLevel = level;
+        for (int i = curLevel; i > 0; i--)
+        {
+            if (newHead.forward.get(i) == null)
+            {
+                // shrinks head if there is a null row
+                adjustHead(i-1, newHead);   
+            }
+            else
+            {
+                break;
+            }
         }
         head = newHead;
     }
@@ -250,17 +269,19 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         return head;
     }
 
-    private void adjustHead(int newLevel)
+    private SkipListSetItem<T> adjustHead(int newLevel, SkipListSetItem<T> head)
     {
         SkipListSetItem<T> temp = head;
         SkipListSetItem<T> newHead = new SkipListSetItem<T>(null, newLevel);
         // copying the pointers from the old head to the new head
         for (int i = 0; i <= level; i++)
         {
+            if (i > newLevel)
+                break;
             newHead.forward.set(i,temp.forward.get(i));
         }
         level = newLevel;
-        head = newHead;
+        return newHead;
     }
     // Sorted set functions
     @Override
@@ -314,11 +335,12 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         double log2size = Math.log(size)/Math.log(2);
         if (log2size > maxLevel)
             maxLevel = (int) Math.ceil(log2size);
+
         int newLevel = randomLevel();
         // if level is the heighest level
         if (newLevel > level)
         {   
-            adjustHead(newLevel);
+            head = adjustHead(newLevel, head);
         }
         
         // temporary array list that holds the pointers to the next lowest node
@@ -485,8 +507,21 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             System.out.println(exception);
             return false;
         }
-        
-        
+        size--;
+    
+        for (int i = level; i > 0; i--)
+        {
+            if (delHeight >= i && head.forward.get(i) == null)
+            {
+                head = adjustHead(i-1, head);
+            }
+            else
+            {
+                break;
+            }
+        }
+        return true;
+
     }
 
     // removes all objects in a passed in collection
