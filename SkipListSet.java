@@ -54,7 +54,6 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             }
             T data = current.payload();
             lastReturn = data;
-            // System.out.print("Height: " + (current.height()) + " Payload:");
             current = current.forward.get(0);
             return data;
         }
@@ -110,50 +109,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             }
         }
     
-        // public void printForward()
-        // {
-        //     System.out.print("[");
-        //     for (SkipListSetItem<T> item : forward)
-        //     {
-        //         if (item != null)
-        //         {
-        //             System.out.print(item.payload().toString() + ", ");
-        //         }
-        //         else
-        //         {
-        //             System.out.print("null ");
-        //         }
-        //     }
-        //     System.out.print("]\n");
-        // }
 
-    }
-
-    // debugging printing code delete later
-    public void printSkipList()
-    {
-        for (int i = level; i >= 0; i--)
-        {
-            System.out.print("Level: " + i + " ");
-            SkipListSetItem<T> current = head;
-            for (int j = 0; j <= size(); j++)
-            {
-                if (current.payload() == null)
-                {
-                    System.out.print("head\t");
-                }
-                else if (current.height() < i)
-                {
-                    System.out.print("\t");
-                }
-                else
-                {
-                    System.out.print(current.payload() + "\t");
-                }
-                current = current.forward.get(0);
-            }
-            System.out.println();
-        }
     }
     
     // basically just makes a whole new skiplist with the previous values
