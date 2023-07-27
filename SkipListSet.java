@@ -379,7 +379,15 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean contains(Object o) {
-        return find((T)o);
+        try
+        {
+            return find((T)o);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }
     }
 
     @Override
