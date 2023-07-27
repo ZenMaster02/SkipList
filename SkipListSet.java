@@ -397,11 +397,32 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
 
     public boolean equals (Object o)
     {
-        if (!(o instanceof Set))
+        try
         {
-            System.out.println("error, passing non set into set equals");
+            if (!(o instanceof Set))
+            {
+
+                throw new Exception("Must pass Sets into equals()");
+            }
+            if (hashCode() != o.hashCode())
+            {
+                return false;
+            }
+            for (Object item : (Set) o)
+            {
+                if (!contains(item))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
-        return (hashCode() == o.hashCode());
+        catch (Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }
+        
     }
 
     public int hashCode()

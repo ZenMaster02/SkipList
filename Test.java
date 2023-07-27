@@ -24,6 +24,7 @@ public class Test {
         System.out.println((set2.equals(set)));
         set.retainAll(set2);
         set.printSkipList();
+        System.out.println((set2.equals(set)));
     }
 
 }
