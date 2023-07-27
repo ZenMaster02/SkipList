@@ -426,7 +426,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             System.out.println(e);
             return false;
         }
-        
+
     }
 
     public int hashCode()
@@ -462,6 +462,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         {
             e = (T)o;
             if (e == null)
+
             {
                 return false;
             }
@@ -507,21 +508,6 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             System.out.println(exception);
             return false;
         }
-        size--;
-    
-        for (int i = level; i > 0; i--)
-        {
-            if (delHeight >= i && head.forward.get(i) == null)
-            {
-                head = adjustHead(i-1, head);
-            }
-            else
-            {
-                break;
-            }
-        }
-        return true;
-
     }
 
     // removes all objects in a passed in collection
