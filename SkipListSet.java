@@ -426,7 +426,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             System.out.println(e);
             return false;
         }
-        
+
     }
 
     public int hashCode()
@@ -462,6 +462,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         {
             e = (T)o;
             if (e == null)
+
             {
                 return false;
             }
