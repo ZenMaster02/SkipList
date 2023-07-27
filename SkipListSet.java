@@ -182,12 +182,17 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             }
             current = current.forward.get(0);
         }
-        for (int i = level; i > 0; i--)
+        int curLevel = level;
+        for (int i = curLevel; i > 0; i--)
         {
             if (newHead.forward.get(i) == null)
             {
                 // shrinks head if there is a null row
                 adjustHead(i-1, newHead);   
+            }
+            else
+            {
+                break;
             }
         }
         head = newHead;
@@ -467,7 +472,18 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             }
         }
         size--;
-        
+    
+        for (int i = level; i > 0; i--)
+        {
+            if (delHeight >= i && head.forward.get(i) == null)
+            {
+                head = adjustHead(i-1, head);
+            }
+            else
+            {
+                break;
+            }
+        }
         return true;
     }
 
