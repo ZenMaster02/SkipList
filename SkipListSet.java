@@ -103,6 +103,11 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
             {
                 forward.add(i, null);
             }
+            // if height is bigger than current level, increases the level
+            if (height > level)
+            {
+                level = height;
+            }
         }
     
         // public void printForward()
@@ -168,7 +173,8 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         }
         for (int i = 0; i < size; i++)
         {
-            current.changeHeight(randomLevel());
+            current.changeHeight(randomLevel());           
+        
             for (int j = 1; j <= current.height(); j++)
             {
                 lastItem[j].forward.set(j, current);
@@ -192,9 +198,7 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         int level = 0;
         // max level is chosen based on binary log of the amount of nodes
         // amount needed till next rebalance is doubled
-        double log2size = Math.log(size)/Math.log(2);
-        if (log2size > maxLevel)
-            maxLevel = (int) Math.floor(log2size);
+        
         int temp = rand.nextInt() % 2;
         while (true)
         {
@@ -307,6 +311,9 @@ public class SkipListSet <T extends Comparable<T>> implements SortedSet<T> {
         {
             return false;
         }
+        double log2size = Math.log(size)/Math.log(2);
+        if (log2size > maxLevel)
+            maxLevel = (int) Math.floor(log2size);
         int newLevel = randomLevel();
         // if level is the heighest level
         if (newLevel > level)
